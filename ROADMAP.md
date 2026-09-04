@@ -10,8 +10,8 @@ The roadmap should not be changed casually. Bugs and necessary design correction
 
 ## Current Status
 
-**Current Milestone:** M0 — Engineering Specification  
-**Current Branch:** `docs/project-specification`  
+**Current Milestone:** M1 - Project Foundation  
+**Current Branch:** `main`  
 **Application Code:** Not started  
 **Game Engine:** Paused
 
