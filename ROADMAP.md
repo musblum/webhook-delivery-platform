@@ -30,11 +30,11 @@ Define what the system does, why it exists, and how we plan to build it before w
 - [x] Define the problem in `README.md`
 - [x] Document the initial architecture
 - [x] ADR-001: Use Java as the primary language
-- [ ] Complete project roadmap
-- [ ] Define initial API
-- [ ] Define initial database model
-- [ ] Define project requirements
-- [ ] Add remaining initial ADRs
+- [x] Complete project roadmap
+- [x] Define initial API
+- [x] Define initial database model
+- [x] Define project requirements
+- [x] Add remaining initial ADRs
 
 ## Definition of Done
 
