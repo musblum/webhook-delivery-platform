@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/events")
 public class WebhookEventController {
@@ -26,6 +28,12 @@ public class WebhookEventController {
         WebhookEvent event =
                 eventService.createEvent
                         (request.endpointId(), request.eventType(), request.payload());
+        return EventResponse.from(event);
+    }
+
+    @GetMapping("/{id}")
+    public EventResponse getEvent(@PathVariable UUID id){
+        WebhookEvent event = eventService.getEvent(id);
         return EventResponse.from(event);
     }
 }

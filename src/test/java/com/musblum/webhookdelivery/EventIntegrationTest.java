@@ -12,6 +12,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import tools.jackson.databind.ObjectMapper;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.UUID;
 
@@ -103,5 +104,83 @@ class EventIntegrationTest {
         );
 
         assertEquals(1, pendingDeliveryCount);
+    }
+
+    @Test
+    void getsEventById() throws Exception {
+
+        String endpointResponse =
+                mockMvc.perform(post("/api/v1/endpoints")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                    {
+                                      "url": "https://example.com/webhooks"
+                                    }
+                                    """))
+                        .andExpect(status().isCreated())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+
+        String endpointId = objectMapper
+                .readTree(endpointResponse)
+                .get("id")
+                .asText();
+
+        String eventResponse =
+                mockMvc.perform(post("/api/v1/events")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                    {
+                                      "endpointId": "%s",
+                                      "eventType": "order.paid",
+                                      "payload": {
+                                        "orderId": 123
+                                      }
+                                    }
+                                    """.formatted(endpointId)))
+                        .andExpect(status().isCreated())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+
+        String eventId = objectMapper
+                .readTree(eventResponse)
+                .get("id")
+                .asText();
+
+        mockMvc.perform(get("/api/v1/events/" + eventId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(eventId))
+                .andExpect(jsonPath("$.eventType").value("order.paid"))
+                .andExpect(jsonPath("$.payload.orderId").value(123))
+                .andExpect(jsonPath("$.createdAt").exists());
+    }
+
+
+    @Test
+    void returns404WhenEventDoesNotExist() throws Exception {
+        UUID missingEventId = UUID.randomUUID();
+
+        mockMvc.perform(get("/api/v1/events/" + missingEventId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void returns404WhenCreatingEventForMissingEndpoint() throws Exception {
+        UUID missingEndpointId = UUID.randomUUID();
+
+        mockMvc.perform(post("/api/v1/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "endpointId": "%s",
+                              "eventType": "order.paid",
+                              "payload": {
+                                "orderId": 123
+                              }
+                            }
+                            """.formatted(missingEndpointId)))
+                .andExpect(status().isNotFound());
     }
 }

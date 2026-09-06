@@ -1,5 +1,6 @@
 package com.musblum.webhookdelivery.service;
 
+import com.musblum.webhookdelivery.exception.ResourceNotFoundException;
 import com.musblum.webhookdelivery.model.WebhookDelivery;
 import com.musblum.webhookdelivery.model.WebhookEndpoint;
 import com.musblum.webhookdelivery.model.WebhookEvent;
@@ -39,7 +40,9 @@ public class WebhookEventService {
 
         WebhookEndpoint endpoint =
                 webhookEndpointRepository.findById(endpointId)
-                        .orElseThrow();
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException("Endpoint not found: " + endpointId)
+                        );
 
         WebhookEvent event = new WebhookEvent(eventType, payload);
         WebhookEvent savedEvent = webhookEventRepository.save(event);
@@ -49,6 +52,12 @@ public class WebhookEventService {
         webhookDeliveryRepository.save(delivery);
 
         return savedEvent;
+    }
+
+    public WebhookEvent getEvent(UUID eventId) {
+        return webhookEventRepository.findById(eventId).orElseThrow(() ->
+                new ResourceNotFoundException("Event not found: " + eventId)
+        );
     }
 
 

@@ -30,8 +30,10 @@ Example response:
 
 ```json
 {
-  "id": "ep_123",
-  "url": "https://warehouse.example.com/webhooks"
+  "id": "a-real-uuid",
+  "url": "https://warehouse.example.com/webhooks",
+  "createdAt": "2026-09-06T18:00:00Z",
+  "updatedAt": "2026-09-06T18:00:00Z"
 }
 ```
 
@@ -57,8 +59,12 @@ Example response:
 
 ```json
 {
-  "id": "evt_456",
-  "status": "ACCEPTED"
+  "id": "a-real-uuid",
+  "eventType": "order.paid",
+  "payload": {
+    "orderId": 123
+  },
+  "createdAt": "2026-09-06T18:00:00Z"
 }
 ```
 
@@ -76,9 +82,12 @@ Example response:
 
 ```json
 {
-  "id": "evt_456",
+  "id": "a-real-uuid",
   "eventType": "order.paid",
-  "status": "ACCEPTED"
+  "payload": {
+    "orderId": 123
+  },
+  "createdAt": "2026-09-06T18:00:00Z"
 }
 ```
 
@@ -92,10 +101,12 @@ Example response:
 
 ```json
 {
-  "id": "del_789",
-  "eventId": "evt_456",
-  "endpointId": "ep_123",
-  "status": "PENDING"
+  "id": "a-real-uuid",
+  "eventId": "a-real-uuid",
+  "endpointId": "a-real-uuid",
+  "status": "PENDING",
+  "createdAt": "2026-09-06T18:00:00Z",
+  "updatedAt": "2026-09-06T18:00:00Z"
 }
 ```
 
