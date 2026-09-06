@@ -2,7 +2,7 @@
 
 This document describes the public HTTP API for the Webhook Delivery Platform.
 
-The API allows client applications to register webhook destinations, submit events for delivery, and inspect the status of events and deliveries.
+The API allows client applications to register webhook destinations, submit events for delivery, and inspect events and the status of deliveries
 
 ## Base Path
 
@@ -30,8 +30,10 @@ Example response:
 
 ```json
 {
-  "id": "ep_123",
-  "url": "https://warehouse.example.com/webhooks"
+  "id": "a-real-uuid",
+  "url": "https://warehouse.example.com/webhooks",
+  "createdAt": "2026-09-06T18:00:00Z",
+  "updatedAt": "2026-09-06T18:00:00Z"
 }
 ```
 
@@ -45,7 +47,7 @@ Example request:
 
 ```json
 {
-  "endpointId": "ep_123",
+  "endpointId": "550e8400-e29b-41d4-a716-446655440000",
   "eventType": "order.paid",
   "payload": {
     "orderId": 123
@@ -57,8 +59,9 @@ Example response:
 
 ```json
 {
-  "id": "evt_456",
-  "status": "ACCEPTED"
+  "eventId": "a-real-uuid",
+  "deliveryId": "a-real-uuid",
+  "status": "PENDING"
 }
 ```
 
@@ -76,9 +79,12 @@ Example response:
 
 ```json
 {
-  "id": "evt_456",
+  "id": "a-real-uuid",
   "eventType": "order.paid",
-  "status": "ACCEPTED"
+  "payload": {
+    "orderId": 123
+  },
+  "createdAt": "2026-09-06T18:00:00Z"
 }
 ```
 
@@ -92,10 +98,12 @@ Example response:
 
 ```json
 {
-  "id": "del_789",
-  "eventId": "evt_456",
-  "endpointId": "ep_123",
-  "status": "PENDING"
+  "id": "a-real-uuid",
+  "eventId": "a-real-uuid",
+  "endpointId": "a-real-uuid",
+  "status": "PENDING",
+  "createdAt": "2026-09-06T18:00:00Z",
+  "updatedAt": "2026-09-06T18:00:00Z"
 }
 ```
 

@@ -10,9 +10,9 @@ The roadmap should not be changed casually. Bugs and necessary design correction
 
 ## Current Status
 
-**Current Milestone:** M2 - Durable Event Ingestion  
-**Current Branch:** `main`  
-**Application Code:** Project foundation complete  
+**Current Milestone:** M3 - Reliable Work Dispatch
+**Current Branch:** `main`
+**Application Code:** Durable event ingestion complete
 **Game Engine:** Paused
 
 ---
@@ -111,6 +111,7 @@ The system will begin storing:
 
 At the end of this milestone, the system can accept and remember events, but it does not yet reliably deliver them.
 
+**Status:** Complete
 ---
 
 # M3 — Reliable Work Dispatch
