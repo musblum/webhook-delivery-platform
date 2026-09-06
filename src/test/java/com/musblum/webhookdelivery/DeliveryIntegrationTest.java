@@ -79,7 +79,7 @@ class DeliveryIntegrationTest {
 
         String eventId = objectMapper
                 .readTree(eventResponse)
-                .get("id")
+                .get("eventId")
                 .asText();
 
         UUID deliveryId = jdbcTemplate.queryForObject(

@@ -32,7 +32,7 @@ public class WebhookEventService {
 
 
     @Transactional
-    public WebhookEvent createEvent(
+    public WebhookDelivery createEvent(
             UUID endpointId,
             String eventType,
             JsonNode payload
@@ -49,9 +49,9 @@ public class WebhookEventService {
 
         WebhookDelivery delivery = new WebhookDelivery(savedEvent, endpoint);
 
-        webhookDeliveryRepository.save(delivery);
+        WebhookDelivery savedDelivery = webhookDeliveryRepository.save(delivery);
 
-        return savedEvent;
+        return savedDelivery;
     }
 
     public WebhookEvent getEvent(UUID eventId) {

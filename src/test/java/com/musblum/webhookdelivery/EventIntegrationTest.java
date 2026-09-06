@@ -5,18 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import tools.jackson.databind.ObjectMapper;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -76,17 +76,16 @@ class EventIntegrationTest {
                                         }
                                         """.formatted(endpointId)))
                         .andExpect(status().isCreated())
-                        .andExpect(jsonPath("$.id").exists())
-                        .andExpect(jsonPath("$.eventType").value("order.paid"))
-                        .andExpect(jsonPath("$.payload.orderId").value(123))
-                        .andExpect(jsonPath("$.createdAt").exists())
+                        .andExpect(jsonPath("$.eventId").exists())
+                        .andExpect(jsonPath("$.deliveryId").exists())
+                        .andExpect(jsonPath("$.status").value("PENDING"))
                         .andReturn()
                         .getResponse()
                         .getContentAsString();
 
         String eventId = objectMapper
                 .readTree(eventResponse)
-                .get("id")
+                .get("eventId")
                 .asText();
 
         // Verify that submitting the event also created a PENDING delivery.
@@ -146,7 +145,7 @@ class EventIntegrationTest {
 
         String eventId = objectMapper
                 .readTree(eventResponse)
-                .get("id")
+                .get("eventId")
                 .asText();
 
         mockMvc.perform(get("/api/v1/events/" + eventId))

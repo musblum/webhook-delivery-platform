@@ -3,8 +3,6 @@ package com.musblum.webhookdelivery.service;
 import com.musblum.webhookdelivery.exception.ResourceNotFoundException;
 import com.musblum.webhookdelivery.model.WebhookDelivery;
 import com.musblum.webhookdelivery.repository.WebhookDeliveryRepository;
-import com.musblum.webhookdelivery.repository.WebhookEndpointRepository;
-import com.musblum.webhookdelivery.repository.WebhookEventRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

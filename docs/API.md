@@ -59,12 +59,9 @@ Example response:
 
 ```json
 {
-  "id": "a-real-uuid",
-  "eventType": "order.paid",
-  "payload": {
-    "orderId": 123
-  },
-  "createdAt": "2026-09-06T18:00:00Z"
+  "eventId": "a-real-uuid",
+  "deliveryId": "a-real-uuid",
+  "status": "PENDING"
 }
 ```
 

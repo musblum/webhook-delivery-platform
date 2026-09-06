@@ -2,6 +2,8 @@ package com.musblum.webhookdelivery.controller;
 
 import com.musblum.webhookdelivery.dto.CreateEventRequest;
 import com.musblum.webhookdelivery.dto.EventResponse;
+import com.musblum.webhookdelivery.dto.EventSubmissionResponse;
+import com.musblum.webhookdelivery.model.WebhookDelivery;
 import com.musblum.webhookdelivery.model.WebhookEvent;
 import com.musblum.webhookdelivery.service.WebhookEventService;
 import jakarta.validation.Valid;
@@ -22,13 +24,13 @@ public class WebhookEventController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventResponse createEvent(
+    public EventSubmissionResponse createEvent(
             @Valid @RequestBody CreateEventRequest request
             ){
-        WebhookEvent event =
+        WebhookDelivery delivery =
                 eventService.createEvent
                         (request.endpointId(), request.eventType(), request.payload());
-        return EventResponse.from(event);
+        return EventSubmissionResponse.from(delivery);
     }
 
     @GetMapping("/{id}")
