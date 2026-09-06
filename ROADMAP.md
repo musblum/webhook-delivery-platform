@@ -10,9 +10,9 @@ The roadmap should not be changed casually. Bugs and necessary design correction
 
 ## Current Status
 
-**Current Milestone:** M1 - Project Foundation  
+**Current Milestone:** M2 - Durable Event Ingestion  
 **Current Branch:** `main`  
-**Application Code:** Not started  
+**Application Code:** Project foundation complete  
 **Game Engine:** Paused
 
 ---
@@ -77,6 +77,7 @@ Before using unfamiliar tools such as Docker, Flyway, or Testcontainers, learn:
 3. how the tool works
 4. why it belongs in this project
 
+**Status:** Complete
 ---
 
 # M2 — Durable Event Ingestion
