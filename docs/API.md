@@ -2,7 +2,7 @@
 
 This document describes the public HTTP API for the Webhook Delivery Platform.
 
-The API allows client applications to register webhook destinations, submit events for delivery, and inspect the status of events and deliveries.
+The API allows client applications to register webhook destinations, submit events for delivery, and inspect events and the status of deliveries
 
 ## Base Path
 
@@ -47,7 +47,7 @@ Example request:
 
 ```json
 {
-  "endpointId": "ep_123",
+  "endpointId": "550e8400-e29b-41d4-a716-446655440000,
   "eventType": "order.paid",
   "payload": {
     "orderId": 123

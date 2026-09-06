@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -35,9 +34,6 @@ class DeliveryIntegrationTest {
 
     @Autowired
     ObjectMapper objectMapper;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
 
     @Test
     void getsDeliveryById() throws Exception {
@@ -82,21 +78,14 @@ class DeliveryIntegrationTest {
                 .get("eventId")
                 .asText();
 
-        UUID deliveryId = jdbcTemplate.queryForObject(
-                """
-                SELECT id
-                FROM deliveries
-                WHERE event_id = ?
-                  AND endpoint_id = ?
-                """,
-                UUID.class,
-                UUID.fromString(eventId),
-                UUID.fromString(endpointId)
-        );
+        String deliveryId = objectMapper
+                .readTree(eventResponse)
+                .get("deliveryId")
+                .asText();
 
         mockMvc.perform(get("/api/v1/deliveries/" + deliveryId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(deliveryId.toString()))
+                .andExpect(jsonPath("$.id").value(deliveryId))
                 .andExpect(jsonPath("$.eventId").value(eventId))
                 .andExpect(jsonPath("$.endpointId").value(endpointId))
                 .andExpect(jsonPath("$.status").value("PENDING"))
