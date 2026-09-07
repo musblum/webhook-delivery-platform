@@ -88,6 +88,11 @@ class EventIntegrationTest {
                 .get("eventId")
                 .asText();
 
+        String deliveryId = objectMapper
+                .readTree(eventResponse)
+                .get("deliveryId")
+                .asText();
+
         // Verify that submitting the event also created a PENDING delivery.
         Integer pendingDeliveryCount = jdbcTemplate.queryForObject(
                 """
@@ -103,7 +108,22 @@ class EventIntegrationTest {
         );
 
         assertEquals(1, pendingDeliveryCount);
+
+        Integer pendingOutboxCount = jdbcTemplate.queryForObject(
+                """
+                SELECT COUNT(*)
+                FROM outbox_messages
+                WHERE delivery_id = ?
+                  AND published_at IS NULL
+                """,
+                Integer.class,
+                UUID.fromString(deliveryId)
+        );
+
+        assertEquals(1, pendingOutboxCount);
     }
+
+
 
     @Test
     void getsEventById() throws Exception {
