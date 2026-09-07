@@ -11,14 +11,9 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Testcontainers
 @SpringBootTest
-class DatabaseIntegrationTest {
+class DatabaseIntegrationTest extends IntegrationTestBase{
 
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgres =
-            new PostgreSQLContainer("postgres:17");
 
     @Autowired
     JdbcTemplate jdbcTemplate;
