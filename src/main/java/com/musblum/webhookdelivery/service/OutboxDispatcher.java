@@ -2,7 +2,6 @@ package com.musblum.webhookdelivery.service;
 
 import com.musblum.webhookdelivery.model.OutboxMessage;
 import com.musblum.webhookdelivery.repository.OutboxMessageRepository;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ public class OutboxDispatcher {
     private final StringRedisTemplate stringRedisTemplate;
 
     public OutboxDispatcher(OutboxMessageRepository outboxMessageRepository,
-                            StringRedisTemplate stringRedisTemplate, RedisTemplate<Object, Object> redisTemplate) {
+                            StringRedisTemplate stringRedisTemplate) {
         this.outboxMessageRepository = outboxMessageRepository;
         this.stringRedisTemplate = stringRedisTemplate;
     }
