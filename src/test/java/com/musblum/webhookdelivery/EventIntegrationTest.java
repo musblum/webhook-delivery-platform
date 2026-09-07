@@ -21,15 +21,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Testcontainers
 @SpringBootTest
 @AutoConfigureMockMvc
-class EventIntegrationTest {
+class EventIntegrationTest extends IntegrationTestBase {
 
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgres =
-            new PostgreSQLContainer("postgres:17");
 
     @Autowired
     MockMvc mockMvc;
