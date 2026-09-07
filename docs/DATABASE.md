@@ -43,6 +43,19 @@ Stores the work of delivering an event to a webhook endpoint.
 | `created_at` | When the delivery was created |
 | `updated_at` | When the delivery was last updated |
 
+### Outbox Messages
+
+Stores durable reminders that deliveries still need to be published to the work queue.
+
+| Column | Purpose |
+|---|---|
+| `id` | Unique identifier for the outbox message |
+| `delivery_id` | Delivery that needs to be published |
+| `created_at` | When the outbox message was created |
+| `published_at` | When the message was successfully published to Valkey; `NULL` means it is still pending |
+
+The outbox message is created in the same PostgreSQL transaction as the event and delivery. This prevents a delivery from being stored without also recording that it still needs to be dispatched.
+
 ## Relationships
 
 A delivery belongs to one event and one webhook endpoint.

@@ -10,9 +10,9 @@ The roadmap should not be changed casually. Bugs and necessary design correction
 
 ## Current Status
 
-**Current Milestone:** M3 - Reliable Work Dispatch
+**Current Milestone:** M4 - Distributed Workers
 **Current Branch:** `main`
-**Application Code:** Durable event ingestion complete
+**Application Code:** Reliable work dispatch complete
 **Game Engine:** Paused
 
 ---
@@ -78,6 +78,7 @@ Before using unfamiliar tools such as Docker, Flyway, or Testcontainers, learn:
 4. why it belongs in this project
 
 **Status:** Complete
+
 ---
 
 # M2 — Durable Event Ingestion
@@ -112,6 +113,7 @@ The system will begin storing:
 At the end of this milestone, the system can accept and remember events, but it does not yet reliably deliver them.
 
 **Status:** Complete
+
 ---
 
 # M3 — Reliable Work Dispatch
@@ -134,6 +136,8 @@ This milestone introduces the first major distributed-systems concepts.
 ## Learning Rule
 
 These concepts must be explained and understood before implementation.
+
+**Status:** Complete
 
 ---
 

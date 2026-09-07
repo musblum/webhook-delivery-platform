@@ -23,3 +23,27 @@ Client Application
 +-------------------+
 |    PostgreSQL     |
 +-------------------+
+```
+
+## Reliable Work Dispatch
+
+Event ingestion and delivery processing are separated so the API does not need to perform webhook delivery before responding to the client.
+
+```text
+Client
+  |
+  | POST /api/v1/events
+  v
+Spring Boot API
+  |
+  | one PostgreSQL transaction
+  v
+Event + Delivery + Outbox Message
+  |
+  | later
+  v
+Outbox Dispatcher
+  |
+  v
+Valkey Stream
+webhook-deliveries

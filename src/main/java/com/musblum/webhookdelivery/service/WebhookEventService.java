@@ -1,9 +1,11 @@
 package com.musblum.webhookdelivery.service;
 
 import com.musblum.webhookdelivery.exception.ResourceNotFoundException;
+import com.musblum.webhookdelivery.model.OutboxMessage;
 import com.musblum.webhookdelivery.model.WebhookDelivery;
 import com.musblum.webhookdelivery.model.WebhookEndpoint;
 import com.musblum.webhookdelivery.model.WebhookEvent;
+import com.musblum.webhookdelivery.repository.OutboxMessageRepository;
 import com.musblum.webhookdelivery.repository.WebhookDeliveryRepository;
 import com.musblum.webhookdelivery.repository.WebhookEndpointRepository;
 import com.musblum.webhookdelivery.repository.WebhookEventRepository;
@@ -19,15 +21,17 @@ public class WebhookEventService {
     private final WebhookEventRepository webhookEventRepository;
     private final WebhookDeliveryRepository webhookDeliveryRepository;
     private final WebhookEndpointRepository webhookEndpointRepository;
+    private final OutboxMessageRepository outboxMessageRepository;
 
     public WebhookEventService(
             WebhookEventRepository webhookEventRepository,
             WebhookDeliveryRepository webhookDeliveryRepository,
-            WebhookEndpointRepository webhookEndpointRepository
-            ) {
+            WebhookEndpointRepository webhookEndpointRepository,
+            OutboxMessageRepository outboxMessageRepository) {
         this.webhookEventRepository = webhookEventRepository;
         this.webhookDeliveryRepository = webhookDeliveryRepository;
         this.webhookEndpointRepository = webhookEndpointRepository;
+        this.outboxMessageRepository = outboxMessageRepository;
     }
 
 
@@ -50,6 +54,9 @@ public class WebhookEventService {
         WebhookDelivery delivery = new WebhookDelivery(savedEvent, endpoint);
 
         WebhookDelivery savedDelivery = webhookDeliveryRepository.save(delivery);
+
+        OutboxMessage outboxMessage = new OutboxMessage(savedDelivery);
+        outboxMessageRepository.save(outboxMessage);
 
         return savedDelivery;
     }
