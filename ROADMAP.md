@@ -10,9 +10,9 @@ The roadmap should not be changed casually. Bugs and necessary design correction
 
 ## Current Status
 
-**Current Milestone:** M4 - Distributed Workers
+**Current Milestone:** M5 - Retries and Dead-Letter Handling
 **Current Branch:** `main`
-**Application Code:** Reliable work dispatch complete
+**Application Code:** Distributed worker execution complete
 **Game Engine:** Paused
 
 ---
@@ -157,6 +157,8 @@ Create independent worker processes that perform webhook deliveries.
 - HTTP delivery attempts
 
 The system should eventually support multiple workers processing different deliveries at the same time.
+
+**Status:** Complete
 
 ---
 
