@@ -51,6 +51,10 @@ public class WebhookDelivery {
         this.status =  DeliveryStatus.PENDING;
     }
 
+    public void markSucceeded() {
+        this.status = DeliveryStatus.SUCCEEDED;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
