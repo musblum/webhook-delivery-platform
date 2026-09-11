@@ -122,3 +122,13 @@ Example:
 `Send event evt_456 to endpoint ep_123.`
 
 One event may eventually have multiple deliveries if it needs to be sent to multiple destinations.
+
+### Replay a Failed Delivery
+
+`POST /api/v1/deliveries/{id}/replay`
+
+Requeues a delivery that is currently in `FAILED` status.
+
+The delivery is reset to `PENDING` and placed back into the normal delivery pipeline.
+
+Only `FAILED` deliveries can be replayed.
