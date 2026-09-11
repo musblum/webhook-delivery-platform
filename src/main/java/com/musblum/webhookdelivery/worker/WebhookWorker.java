@@ -3,6 +3,7 @@ package com.musblum.webhookdelivery.worker;
 import com.musblum.webhookdelivery.dto.WebhookPayload;
 import com.musblum.webhookdelivery.model.WebhookDelivery;
 import com.musblum.webhookdelivery.repository.WebhookDeliveryRepository;
+import com.musblum.webhookdelivery.service.RetryPolicy;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.connection.stream.*;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -23,9 +25,9 @@ import java.util.UUID;
 public class WebhookWorker
         implements StreamListener<String, MapRecord<String, String, String>> {
 
-    private static final String STREAM = "webhook-deliveries";
     private static final String GROUP = "webhook-workers";
     private final String consumerName = "worker-" + UUID.randomUUID();
+    private final RetryPolicy retryPolicy;
 
     private final StringRedisTemplate redisTemplate;
     private final WebhookDeliveryRepository deliveryRepository;
@@ -34,11 +36,13 @@ public class WebhookWorker
     public WebhookWorker(
             StringRedisTemplate redisTemplate,
             WebhookDeliveryRepository deliveryRepository,
-            RestClient.Builder restClientBuilder) {
+            RestClient.Builder restClientBuilder,
+            RetryPolicy retryPolicy) {
 
         this.redisTemplate = redisTemplate;
         this.deliveryRepository = deliveryRepository;
         this.restClient = restClientBuilder.build();
+        this.retryPolicy = retryPolicy;
     }
 
     @Override
@@ -82,9 +86,33 @@ public class WebhookWorker
             );
 
         } catch (RestClientException e) {
-            System.err.println(
-                    consumerName + " failed delivery " + deliveryId
-                            + ": " + e.getMessage()
+            int completedAttempts = delivery.getAttemptCount() + 1;
+
+            if (retryPolicy.isRetryable(e)
+                    && retryPolicy.shouldRetry(completedAttempts)) {
+
+                long delaySeconds =
+                        retryPolicy.calculateRetryDelaySeconds(
+                                completedAttempts,
+                                e);
+
+                Instant nextAttemptAt =
+                        Instant.now().plusSeconds(delaySeconds);
+
+                delivery.scheduleRetry(
+                        nextAttemptAt,
+                        e.getMessage()
+                );
+
+            } else {
+                delivery.markFailed(e.getMessage());
+            }
+
+            deliveryRepository.save(delivery);
+
+            redisTemplate.opsForStream().acknowledge(
+                    GROUP,
+                    message
             );
         }
 

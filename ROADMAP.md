@@ -10,9 +10,9 @@ The roadmap should not be changed casually. Bugs and necessary design correction
 
 ## Current Status
 
-**Current Milestone:** M5 - Retries and Dead-Letter Handling
+**Current Milestone:** M6 - Worker Failure Recovery
 **Current Branch:** `main`
-**Application Code:** Distributed worker execution complete
+**Application Code:** Retries and dead-letter handling complete
 **Game Engine:** Paused
 
 ---
@@ -180,6 +180,8 @@ Make temporary destination failures survivable.
 - manual replay
 
 The system should not immediately lose an event because a destination temporarily fails.
+
+**Status:** Complete
 
 ---
 

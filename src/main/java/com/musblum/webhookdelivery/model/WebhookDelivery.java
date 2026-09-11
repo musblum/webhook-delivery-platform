@@ -30,6 +30,15 @@ public class WebhookDelivery {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    @Column(name = "attempt_count", nullable = false)
+    private int attemptCount;
+
+    @Column(name = "next_attempt_at")
+    private Instant nextAttemptAt;
+
+    @Column(name = "last_error")
+    private String lastError;
+
     @PrePersist
     void onCreate() {
         Instant now = Instant.now();
@@ -49,10 +58,38 @@ public class WebhookDelivery {
         this.event = event;
         this.endpoint = endpoint;
         this.status =  DeliveryStatus.PENDING;
+        this.attemptCount = 0;
     }
 
     public void markSucceeded() {
+        this.attemptCount++;
         this.status = DeliveryStatus.SUCCEEDED;
+        this.nextAttemptAt = null;
+        this.lastError = null;
+    }
+
+    public void scheduleRetry(Instant nextAttemptAt, String errorMessage) {
+        this.attemptCount++;
+        this.nextAttemptAt = nextAttemptAt;
+        this.lastError = errorMessage;
+    }
+
+    public void markFailed(String errorMessage) {
+        this.attemptCount++;
+        this.status = DeliveryStatus.FAILED;
+        this.nextAttemptAt = null;
+        this.lastError = errorMessage;
+    }
+
+    public void clearNextAttempt() {
+        this.nextAttemptAt = null;
+    }
+
+    public void resetForReplay() {
+        this.status = DeliveryStatus.PENDING;
+        this.attemptCount = 0;
+        this.nextAttemptAt = null;
+        this.lastError = null;
     }
 
     public Instant getCreatedAt() {
@@ -77,5 +114,17 @@ public class WebhookDelivery {
 
     public DeliveryStatus getStatus() {
         return status;
+    }
+
+    public int getAttemptCount() {
+        return attemptCount;
+    }
+
+    public String getLastError() {
+        return lastError;
+    }
+
+    public Instant getNextAttemptAt() {
+        return nextAttemptAt;
     }
 }
