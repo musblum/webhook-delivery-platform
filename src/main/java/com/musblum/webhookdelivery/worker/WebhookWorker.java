@@ -1,18 +1,23 @@
 package com.musblum.webhookdelivery.worker;
 
 import com.musblum.webhookdelivery.dto.WebhookPayload;
+import com.musblum.webhookdelivery.model.DeliveryStatus;
 import com.musblum.webhookdelivery.model.WebhookDelivery;
 import com.musblum.webhookdelivery.repository.WebhookDeliveryRepository;
 import com.musblum.webhookdelivery.service.RetryPolicy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.Range;
 import org.springframework.data.redis.connection.stream.*;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -26,8 +31,12 @@ public class WebhookWorker
         implements StreamListener<String, MapRecord<String, String, String>> {
 
     private static final String GROUP = "webhook-workers";
+    private static final String STREAM = "webhook-deliveries";
     private final String consumerName = "worker-" + UUID.randomUUID();
     private final RetryPolicy retryPolicy;
+
+    @Value("${app.worker.stale-threshold:30s}")
+    private Duration staleThreshold;
 
     private final StringRedisTemplate redisTemplate;
     private final WebhookDeliveryRepository deliveryRepository;
@@ -47,6 +56,11 @@ public class WebhookWorker
 
     @Override
     public void onMessage(MapRecord<String, String, String> message) {
+        processMessage(message);
+    }
+
+    private void processMessage(MapRecord<String, String, String> message) {
+
         String deliveryId = message.getValue().get("deliveryId");
 
         System.out.println(
@@ -56,6 +70,22 @@ public class WebhookWorker
         WebhookDelivery delivery =
                 deliveryRepository.findById(UUID.fromString(deliveryId))
                         .orElseThrow();
+
+        if (delivery.getStatus() != DeliveryStatus.PENDING) {
+            redisTemplate.opsForStream().acknowledge(
+                    GROUP,
+                    message
+            );
+            return;
+        }
+
+        if (delivery.getNextAttemptAt() != null) {
+            redisTemplate.opsForStream().acknowledge(
+                    GROUP,
+                    message
+            );
+            return;
+        }
 
 
         var endpoint = delivery.getEndpoint();
@@ -70,6 +100,10 @@ public class WebhookWorker
         try {
             var response = restClient.post()
                     .uri(endpoint.getUrl())
+                    .header(
+                            "X-Webhook-Delivery-Id",
+                            delivery.getId().toString()
+                    )
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(webhookPayload)
                     .retrieve()
@@ -115,9 +149,42 @@ public class WebhookWorker
                     message
             );
         }
-
-
     }
+
+    @Scheduled(fixedDelay = 5000)
+    public void recoverStaleMessages() {
+
+        var pendingMessages =
+                redisTemplate.opsForStream().pending(
+                        STREAM,
+                        GROUP,
+                        Range.unbounded(),
+                        10,
+                        staleThreshold
+                );
+
+        var recordIds = pendingMessages.stream()
+                .map(PendingMessage::getId)
+                .toArray(RecordId[]::new);
+
+        if (recordIds.length == 0) {
+            return;
+        }
+
+        var claimedMessages =
+                redisTemplate.<String, String>opsForStream().claim(
+                        STREAM,
+                        GROUP,
+                        consumerName,
+                        staleThreshold,
+                        recordIds
+                );
+
+        for (var message : claimedMessages) {
+            processMessage(message);
+        }
+    }
+
     public String getConsumerName() {
         return consumerName;
     }
