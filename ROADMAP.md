@@ -10,9 +10,9 @@ The roadmap should not be changed casually. Bugs and necessary design correction
 
 ## Current Status
 
-**Current Milestone:** M6 - Worker Failure Recovery
+**Current Milestone:** M7 - Security
 **Current Branch:** `main`
-**Application Code:** Retries and dead-letter handling complete
+**Application Code:** Worker failure recovery complete
 **Game Engine:** Paused
 
 ---
@@ -201,6 +201,8 @@ Recover work when one of our own worker processes crashes.
 - at-least-once delivery
 
 We will intentionally crash workers and verify that another worker can recover unfinished work.
+
+**Ststus:** Complete
 
 ---
 
